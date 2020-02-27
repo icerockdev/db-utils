@@ -1,0 +1,17 @@
+version: '3'
+services:
+  postgres:
+    restart: always
+    image: gitlab.icerockdev.com:4567/docker/alpine-postgres-postgis-9.6:latest
+    stop_grace_period: 30s
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+volumes:
+  postgresql-data:
+    driver: local
