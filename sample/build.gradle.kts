@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.icerockdev"
-version = "0.0.1"
+version = "0.0.2"
 
 apply(plugin = "kotlin")
 
@@ -29,7 +29,7 @@ application {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${properties["kotlin_version"]}")
 
-//    implementation("com.icerockdev:db-utils:0.0.1")
+//    implementation("com.icerockdev:db-utils:0.0.2")
     implementation(project(":db-utils"))
 }
 

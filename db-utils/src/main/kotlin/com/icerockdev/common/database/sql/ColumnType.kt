@@ -24,7 +24,7 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
 
 fun Table.timestamp(name: String): Column<Timestamp> = registerColumn(name, TimestampColumnType())
 
-class TimestampColumnType(): ColumnType() {
+class TimestampColumnType : ColumnType() {
     override fun sqlType(): String = "TIMESTAMP"
 
     override fun nonNullValueToString(value: Any): String {
@@ -38,6 +38,6 @@ class TimestampColumnType(): ColumnType() {
     }
 }
 
-class TimeColumnType() : ColumnType() {
+class TimeColumnType : ColumnType() {
     override fun sqlType(): String = "time"
 }

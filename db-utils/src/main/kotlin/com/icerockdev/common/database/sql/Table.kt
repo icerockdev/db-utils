@@ -9,19 +9,53 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.statements.InsertStatement
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.postgresql.util.PGobject
+import java.lang.reflect.ParameterizedType
 import java.sql.PreparedStatement
 import java.sql.Time
 
+/**
+ * A geography point column
+ *
+ * @param name The column name
+ * @param length The column length
+ */
 fun Table.point(name: String, length: Int = 4326): Column<GeographyPoint> =
     registerColumn(name, GeographyPointColumnType(length))
 
+/**
+ * A time column
+ *
+ * @param name The column name
+ */
 fun Table.time(name: String): Column<Time> =
     registerColumn(name, TimeColumnType())
 
+/**
+ * A jsonb column with TypeReference
+ *
+ * @param name The column name
+ * @param typeRef The type reference
+ * @param jsonMapper Jackson object mapper
+ */
+fun <T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>, jsonMapper: ObjectMapper): Column<T> {
+    val clazz =
+        (when (typeRef.type) {
+            is ParameterizedType -> (typeRef.type as ParameterizedType).rawType
+            else -> typeRef.type
+        }) as Class<*>
+    return registerColumn(name, Json(clazz, jsonMapper))
+}
+
+/**
+ * A jsonb column with Class
+ *
+ * @param name The column name
+ * @param clazz Class object
+ * @param jsonMapper Jackson object mapper
+ */
+fun <T : Any> Table.jsonb(name: String, clazz: Class<T>, jsonMapper: ObjectMapper): Column<T>
+        = registerColumn(name, Json(clazz, jsonMapper))
 
 data class GeographyPoint(
     val lat: Double,
@@ -41,30 +75,7 @@ data class GeographyPoint(
     }
 }
 
-fun <T : Table> T.insertOrUpdate(key: Column<*>, body: T.(InsertStatement<Number>) -> Unit): Int {
-    val query = InsertOrUpdate<Number>(key, this)
-    body(query)
-    return query.execute(TransactionManager.current())!!
-}
-
-// postgres only!
-class InsertOrUpdate<Key : Any>(private val key: Column<*>,
-                                table: Table,
-                                isIgnore: Boolean = false) : InsertStatement<Key>(table, isIgnore) {
-    override fun prepareSQL(transaction: Transaction): String {
-        val updateSetter = table.columns.joinToString { "${it.name} = EXCLUDED.${it.name}" }
-        val onConflict = "ON CONFLICT (${key.name}) DO UPDATE SET $updateSetter"
-        return "${super.prepareSQL(transaction)} $onConflict"
-    }
-}
-
-fun <T : Any> Table.jsonb(name: String, klass: TypeReference<T>, jsonMapper: ObjectMapper): Column<T>
-        = registerColumn(name, Json(klass.type::class.java, jsonMapper))
-
-fun <T : Any> Table.jsonb(name: String, klass: Class<T>, jsonMapper: ObjectMapper): Column<T>
-        = registerColumn(name, Json(klass, jsonMapper))
-
-private class Json<out T : Any>(private val klass: Class<T>, private val jsonMapper: ObjectMapper) : ColumnType() {
+open class Json<out T : Any>(private val clazz: Class<T>, private val jsonMapper: ObjectMapper) : ColumnType() {
     override fun sqlType() = "jsonb"
 
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
@@ -83,7 +94,7 @@ private class Json<out T : Any>(private val klass: Class<T>, private val jsonMap
 
         // We received a PGobject, deserialize its String value.
         return try {
-            jsonMapper.readValue(value.value, klass)
+            jsonMapper.readValue(value.value, clazz)
         } catch (e: Exception) {
             e.printStackTrace()
             throw RuntimeException("Can't parse JSON: $value")
