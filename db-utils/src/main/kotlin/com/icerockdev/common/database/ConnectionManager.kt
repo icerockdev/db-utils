@@ -79,8 +79,8 @@ data class DBConfig(
     val jdbcUrl: String,
     val username: String,
     val password: String,
-    val connectionInitSql: String = "set time zone 'UTC'",
-    val idleTimeout: Long = 600000,
     val schema: String,
-    val maxPoolSize: Int
+    val maxPoolSize: Int,
+    var connectionInitSql: String = "set time zone 'UTC'",
+    var idleTimeout: Long = 600000
 )

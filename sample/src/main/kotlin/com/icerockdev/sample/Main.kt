@@ -20,11 +20,12 @@ object Main {
                 jdbcUrl = "jdbc:postgresql://127.0.0.1:5432/db",
                 username = "user",
                 password = "pass",
-                connectionInitSql = "set time zone UTC",
-                idleTimeout = 600000,
                 schema = "public",
                 maxPoolSize = 5
-            )
+            ).apply {
+                connectionInitSql = "set time zone UTC"
+                idleTimeout = 600000
+            }
         )
 
         // await db is ready

@@ -8,7 +8,7 @@ repositories {
 }
 
 // Append dependency
-implementation("com.icerockdev:db-utils:0.0.2")
+implementation("com.icerockdev:db-utils:0.0.3")
 ````
 
 ## Library usage
