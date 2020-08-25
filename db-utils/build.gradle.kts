@@ -12,7 +12,7 @@ plugins {
 apply(plugin = "kotlin")
 
 group = "com.icerockdev"
-version = "0.0.4"
+version = "0.0.5"
 
 val sourcesJar by tasks.registering(Jar::class) {
     classifier = "sources"
@@ -37,8 +37,9 @@ dependencies {
     implementation("ca.krasnay:sqlbuilder:${properties["sqlbuilder_version"]}")
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties["junit_version"]}")
-    testImplementation("io.zonky.test:embedded-postgres:1.2.6")
-    testImplementation(enforcedPlatform("io.zonky.test.postgres:embedded-postgres-binaries-bom:9.6.18"))
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${properties["junit_version"]}")
+    testImplementation("io.zonky.test:embedded-postgres:${properties["embedded_postgres_version"]}")
+    testImplementation(enforcedPlatform("io.zonky.test.postgres:embedded-postgres-binaries-bom:${properties["embedded_postgres_binaries_version"]}"))
 }
 
 java {
@@ -52,7 +53,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     }
 }
 
-tasks.withType<Test>() {
+tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
