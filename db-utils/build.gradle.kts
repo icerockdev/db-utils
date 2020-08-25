@@ -12,7 +12,7 @@ plugins {
 apply(plugin = "kotlin")
 
 group = "com.icerockdev"
-version = "0.0.3"
+version = "0.0.4"
 
 val sourcesJar by tasks.registering(Jar::class) {
     classifier = "sources"
@@ -20,23 +20,25 @@ val sourcesJar by tasks.registering(Jar::class) {
 }
 
 dependencies {
-    // kotlin
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = properties["kotlin_version"].toString())
-    // logging
-    implementation(group = "ch.qos.logback", name = "logback-classic", version = properties["logback_version"].toString())
-
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${properties["kotlin_version"]}")
+    // Logging
+    implementation("ch.qos.logback:logback-classic:${properties["logback_version"]}")
     // DB
-    api(group = "org.jetbrains.exposed", name = "exposed", version = properties["exposed_version"].toString())
-    implementation(group = "com.zaxxer", name = "HikariCP", version = properties["hikari_cp_version"].toString())
-
+    api("org.jetbrains.exposed:exposed:${properties["exposed_version"]}")
+    implementation("com.zaxxer:HikariCP:${properties["hikari_cp_version"]}")
     // JSON support
-    implementation(group = "com.fasterxml.jackson.core", name = "jackson-core", version = properties["jackson_version"].toString())
-    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = properties["jackson_version"].toString())
-
-
-    // postgres + postgis
-    implementation(group = "org.postgresql", name = "postgresql", version = properties["postgres_version"].toString())
-    implementation(group = "net.postgis", name = "postgis-jdbc", version = properties["postgis_version"].toString())
+    implementation("com.fasterxml.jackson.core:jackson-core:${properties["jackson_version"]}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${properties["jackson_version"]}")
+    // PostgreSQL + PostGIS
+    implementation("org.postgresql:postgresql:${properties["postgres_version"]}")
+    implementation("net.postgis:postgis-jdbc:${properties["postgis_version"]}")
+    // Raw SQL
+    implementation("ca.krasnay:sqlbuilder:${properties["sqlbuilder_version"]}")
+    // Tests
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${properties["junit_version"]}")
+    testImplementation("io.zonky.test:embedded-postgres:1.2.6")
+    testImplementation(enforcedPlatform("io.zonky.test.postgres:embedded-postgres-binaries-bom:9.6.18"))
 }
 
 java {
@@ -47,6 +49,13 @@ java {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+}
+
+tasks.withType<Test>() {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
     }
 }
 
