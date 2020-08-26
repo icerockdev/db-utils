@@ -18,4 +18,4 @@ jobs:
         arguments: build
     - uses: eskatos/gradle-command-action@v1
       with:
-        arguments: :db-utils:publish -DBINTRAY_USER=${{ secrets.BINTRAY_USER }} -DBINTRAY_KEY=${{ secrets.BINTRAY_KEY }}
+        arguments: :db-utils:publish -DBINTRAY_USER=${{ secrets.BINTRAY_USER }} -DBINTRAY_KEY=${{ secrets.BINTRAY_KEY }} -PlibraryPublish
