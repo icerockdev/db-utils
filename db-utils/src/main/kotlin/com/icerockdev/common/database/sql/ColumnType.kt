@@ -7,6 +7,9 @@ package com.icerockdev.common.database.sql
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
+import org.postgis.Geometry
+import org.postgis.PGgeometry
+import org.postgis.Point
 import org.postgresql.util.PGobject
 import java.sql.PreparedStatement
 import java.sql.Timestamp
@@ -20,6 +23,25 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
         obj.value = value.toString()
         stmt.setObject(index, obj)
     }
+
+    private fun getGeographyPoint(value: String): GeographyPoint {
+        val geometry = PGgeometry.geomFromString(value).getPoint(0)
+        return if (geometry != null) {
+            GeographyPoint(geometry.y, geometry.x)
+        } else {
+            error("$value of ${value::class.qualifiedName} is not valid geo object")
+        }
+    }
+
+    override fun valueFromDB(value: Any): GeographyPoint {
+        return when (value) {
+            is PGobject -> getGeographyPoint(value.value)
+            is String -> getGeographyPoint(value)
+            else -> error("$value of ${value::class.qualifiedName} is not valid geo object")
+        }
+    }
+
+
 }
 
 fun Table.timestamp(name: String): Column<Timestamp> = registerColumn(name, TimestampColumnType())
