@@ -7,7 +7,7 @@ package com.icerockdev.common.database.sql
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.Function
 
-fun Column<GeographyPoint?>.pointAs(column: String): Function<String> {
+fun Column<GeographyPoint>.pointAs(column: String): Function<String> {
     return GeogAsText(this, column)
 }
 
