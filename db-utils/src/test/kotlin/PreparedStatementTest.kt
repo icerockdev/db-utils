@@ -158,13 +158,13 @@ class PreparedStatementTest {
 val jsonMapper = jacksonObjectMapper()
 
 object TestTable : IntIdTable() {
-    var integerValue = integer("integer_value")
-    var varcharValue = varchar("varchar_value", 50)
-    var jsonValue: Column<JsonValueDto> = jsonb(
+    val integerValue = integer("integer_value")
+    val varcharValue = varchar("varchar_value", 50)
+    val jsonValue: Column<JsonValueDto> = jsonb(
         name = "json_value",
         jsonMapper = jsonMapper
     )
-    var postgresEnumValue: Column<PostgresEnumValue> = postgresEnum("postgres_enum_value", "varchar")
+    val postgresEnumValue: Column<PostgresEnumValue> = postgresEnum("postgres_enum_value", "varchar")
 }
 
 data class JsonValueDto(var name: String, var value: Int)

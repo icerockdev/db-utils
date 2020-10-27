@@ -48,7 +48,7 @@ fun Table.time(name: String): Column<Time> =
  * @param typeRef The type reference
  * @param jsonMapper Jackson object mapper
  */
-inline fun <reified T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>, jsonMapper: ObjectMapper): Column<T> {
+fun <T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>, jsonMapper: ObjectMapper): Column<T> {
     val clazz =
         (when (typeRef.type) {
             is ParameterizedType -> (typeRef.type as ParameterizedType).rawType
