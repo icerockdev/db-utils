@@ -3,7 +3,7 @@ import com.icerockdev.common.database.execAndMap
 import com.icerockdev.common.database.prepare
 import com.icerockdev.common.database.prepareParameterized
 import com.icerockdev.common.database.sql.jsonb
-import com.icerockdev.common.database.sql.postgresEnumColumn
+import com.icerockdev.common.database.sql.postgresEnum
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.Column
@@ -165,7 +165,7 @@ object TestTable : IntIdTable() {
         clazz = JsonValueDto::class.java,
         jsonMapper = jsonMapper
     )
-    var postgresEnumValue: Column<PostgresEnumValue> = postgresEnumColumn("postgres_enum_value", "varchar")
+    var postgresEnumValue: Column<PostgresEnumValue> = postgresEnum("postgres_enum_value", "varchar")
 }
 
 data class JsonValueDto(var name: String, var value: Int)

@@ -23,7 +23,7 @@ import java.sql.Time
 fun Table.point(name: String, length: Int = 4326): Column<GeographyPoint> =
     registerColumn(name, GeographyPointColumnType(length))
 
-inline fun <reified T : Enum<T>> Table.postgresEnumColumn(name: String, enumType: String? = null): Column<T> {
+inline fun <reified T : Enum<T>> Table.postgresEnum(name: String, enumType: String? = null): Column<T> {
     return registerColumn(name, PGEnumColumnType(name, T::class, enumType))
 }
 
