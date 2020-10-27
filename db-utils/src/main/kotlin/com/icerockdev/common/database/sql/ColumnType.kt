@@ -43,12 +43,12 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
 @Suppress("UNCHECKED_CAST")
 open class EnumColumnType<T : Enum<T>>(
     private val enumName: String,
-    private val clazz: Class<*>,
+    private val clazz: Class<T>,
     private val enumType: String? = null
 ) : ColumnType() {
     override fun sqlType(): String = enumType ?: "${enumName}_enum"
     override fun valueFromDB(value: Any): Any {
-        return java.lang.Enum.valueOf(clazz as Class<T>, value as String)
+        return java.lang.Enum.valueOf(clazz, value as String)
     }
 
     override fun notNullValueToDB(value: Any): Any = PGEnum(sqlType(), value as T)
