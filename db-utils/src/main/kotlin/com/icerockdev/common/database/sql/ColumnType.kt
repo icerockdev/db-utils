@@ -41,7 +41,7 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
 }
 
 @Suppress("UNCHECKED_CAST")
-open class EnumColumnType<T : Enum<T>>(
+open class PGEnumColumnType<T : Enum<T>>(
     private val enumName: String,
     private val clazz: Class<T>,
     private val enumType: String? = null
