@@ -7,9 +7,7 @@ package com.icerockdev.common.database.sql
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
-import org.postgis.Geometry
 import org.postgis.PGgeometry
-import org.postgis.Point
 import org.postgresql.util.PGobject
 import java.sql.PreparedStatement
 import java.sql.Timestamp
@@ -20,7 +18,7 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = "geography"
-        obj.value = value.toString()
+        obj.value = value as String?
         stmt.setObject(index, obj)
     }
 
@@ -40,8 +38,27 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
             else -> error("$value of ${value::class.qualifiedName} is not valid geo object")
         }
     }
+}
 
+@Suppress("UNCHECKED_CAST")
+open class EnumColumnType<T : Enum<T>>(
+    private val enumName: String,
+    private val clazz: Class<*>,
+    private val enumType: String? = null
+) : ColumnType() {
+    override fun sqlType(): String = enumType ?: "${enumName}_enum"
+    override fun valueFromDB(value: Any): Any {
+        return java.lang.Enum.valueOf(clazz as Class<T>, value as String)
+    }
 
+    override fun notNullValueToDB(value: Any): Any = PGEnum(sqlType(), value as T)
+}
+
+class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
+    init {
+        value = enumValue?.name
+        type = enumTypeName
+    }
 }
 
 fun Table.timestamp(name: String): Column<Timestamp> = registerColumn(name, TimestampColumnType())

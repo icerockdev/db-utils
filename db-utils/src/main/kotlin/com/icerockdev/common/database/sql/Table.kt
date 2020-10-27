@@ -23,6 +23,10 @@ import java.sql.Time
 fun Table.point(name: String, length: Int = 4326): Column<GeographyPoint> =
     registerColumn(name, GeographyPointColumnType(length))
 
+fun <T : Enum<T>> Table.enumColumn(name: String, clazz: Class<T>, enumType: String? = null): Column<T>{
+    return registerColumn(name, EnumColumnType<T>(name, clazz, enumType))
+}
+
 /**
  * A time column
  *
@@ -54,8 +58,8 @@ fun <T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>, jsonMapper: O
  * @param clazz Class object
  * @param jsonMapper Jackson object mapper
  */
-fun <T : Any> Table.jsonb(name: String, clazz: Class<T>, jsonMapper: ObjectMapper): Column<T>
-        = registerColumn(name, Json(clazz, jsonMapper))
+fun <T : Any> Table.jsonb(name: String, clazz: Class<T>, jsonMapper: ObjectMapper): Column<T> =
+    registerColumn(name, Json(clazz, jsonMapper))
 
 data class GeographyPoint(
     val lat: Double,
