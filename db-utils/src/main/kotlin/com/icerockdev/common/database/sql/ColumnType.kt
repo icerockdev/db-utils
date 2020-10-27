@@ -19,7 +19,7 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = "geography"
-        obj.value = value as String?
+        obj.value = value?.toString()
         stmt.setObject(index, obj)
     }
 

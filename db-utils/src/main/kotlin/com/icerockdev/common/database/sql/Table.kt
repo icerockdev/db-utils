@@ -23,6 +23,12 @@ import java.sql.Time
 fun Table.point(name: String, length: Int = 4326): Column<GeographyPoint> =
     registerColumn(name, GeographyPointColumnType(length))
 
+/**
+ * A PostgreSQL enum column
+ *
+ * @param name The column name
+ * @param enumType The column type (default: "${name}_enum")
+ */
 inline fun <reified T : Enum<T>> Table.postgresEnum(name: String, enumType: String? = null): Column<T> {
     return registerColumn(name, PGEnumColumnType(name, T::class, enumType))
 }
@@ -55,11 +61,10 @@ inline fun <reified T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>
  * A jsonb column with Class
  *
  * @param name The column name
- * @param clazz Class object
  * @param jsonMapper Jackson object mapper
  */
-inline fun <reified T : Any> Table.jsonb(name: String, clazz: Class<T>, jsonMapper: ObjectMapper): Column<T> =
-    registerColumn(name, Json(clazz, jsonMapper))
+inline fun <reified T : Any> Table.jsonb(name: String, jsonMapper: ObjectMapper): Column<T> =
+    registerColumn(name, Json(T::class.java, jsonMapper))
 
 data class GeographyPoint(
     val lat: Double,

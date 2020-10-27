@@ -162,7 +162,6 @@ object TestTable : IntIdTable() {
     var varcharValue = varchar("varchar_value", 50)
     var jsonValue: Column<JsonValueDto> = jsonb(
         name = "json_value",
-        clazz = JsonValueDto::class.java,
         jsonMapper = jsonMapper
     )
     var postgresEnumValue: Column<PostgresEnumValue> = postgresEnum("postgres_enum_value", "varchar")
