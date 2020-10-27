@@ -11,6 +11,7 @@ import org.postgis.PGgeometry
 import org.postgresql.util.PGobject
 import java.sql.PreparedStatement
 import java.sql.Timestamp
+import kotlin.reflect.KClass
 
 class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
     override fun sqlType(): String = "geography(Point, $length)"
@@ -43,15 +44,20 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
 @Suppress("UNCHECKED_CAST")
 open class PGEnumColumnType<T : Enum<T>>(
     private val enumName: String,
-    private val clazz: Class<T>,
+    private val klass: KClass<T>,
     private val enumType: String? = null
 ) : ColumnType() {
     override fun sqlType(): String = enumType ?: "${enumName}_enum"
-    override fun valueFromDB(value: Any): Any {
-        return java.lang.Enum.valueOf(clazz, value as String)
+    override fun valueFromDB(value: Any): Any = when (value) {
+        is String -> klass.java.enumConstants!!.first { it.name == value }
+        is Enum<*> -> value
+        else -> error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.qualifiedName}")
     }
 
-    override fun notNullValueToDB(value: Any): Any = PGEnum(sqlType(), value as T)
+    override fun notNullValueToDB(value: Any): Any = when (value) {
+        is Enum<*> -> PGEnum(sqlType(), value as T)
+        else -> error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.qualifiedName}")
+    }
 }
 
 class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
