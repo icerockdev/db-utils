@@ -80,6 +80,10 @@ data class GeographyPoint(
 }
 
 open class Json<out T : Any>(private val typeReference: TypeReference<T>, private val jsonMapper: ObjectMapper) : ColumnType() {
+
+    @Deprecated("Since 0.2.0, use primary constructor.")
+    constructor(clazz: Class<T>, jsonMapper: ObjectMapper) : this(object : TypeReference<T>() {}, jsonMapper)
+
     override fun sqlType() = "jsonb"
 
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
