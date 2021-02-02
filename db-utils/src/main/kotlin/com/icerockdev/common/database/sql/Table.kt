@@ -45,16 +45,11 @@ fun Table.time(name: String): Column<Time> =
  * A jsonb column with TypeReference
  *
  * @param name The column name
- * @param typeRef The type reference
+ * @param typeReference The type reference
  * @param jsonMapper Jackson object mapper
  */
-fun <T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>, jsonMapper: ObjectMapper): Column<T> {
-    val clazz =
-        (when (typeRef.type) {
-            is ParameterizedType -> (typeRef.type as ParameterizedType).rawType
-            else -> typeRef.type
-        }) as Class<*>
-    return registerColumn(name, Json(clazz, jsonMapper))
+fun <T : Any> Table.jsonb(name: String, typeReference: TypeReference<T>, jsonMapper: ObjectMapper): Column<T> {
+    return registerColumn(name, Json(typeReference, jsonMapper))
 }
 
 /**
@@ -64,7 +59,7 @@ fun <T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>, jsonMapper: O
  * @param jsonMapper Jackson object mapper
  */
 inline fun <reified T : Any> Table.jsonb(name: String, jsonMapper: ObjectMapper): Column<T> =
-    registerColumn(name, Json(T::class.java, jsonMapper))
+    registerColumn(name, Json(object : TypeReference<T>() {}, jsonMapper))
 
 data class GeographyPoint(
     val lat: Double,
@@ -84,7 +79,11 @@ data class GeographyPoint(
     }
 }
 
-open class Json<out T : Any>(private val clazz: Class<T>, private val jsonMapper: ObjectMapper) : ColumnType() {
+open class Json<out T : Any>(private val typeReference: TypeReference<T>, private val jsonMapper: ObjectMapper) : ColumnType() {
+
+    @Deprecated("Since 0.2.0, use primary constructor.")
+    constructor(clazz: Class<T>, jsonMapper: ObjectMapper) : this(object : TypeReference<T>() {}, jsonMapper)
+
     override fun sqlType() = "jsonb"
 
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
@@ -103,7 +102,7 @@ open class Json<out T : Any>(private val clazz: Class<T>, private val jsonMapper
 
         // We received a PGobject, deserialize its String value.
         return try {
-            jsonMapper.readValue(value.value, clazz)
+            jsonMapper.readValue(value.value, typeReference)
         } catch (e: Exception) {
             e.printStackTrace()
             throw RuntimeException("Can't parse JSON: $value")
