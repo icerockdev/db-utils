@@ -12,10 +12,10 @@ plugins {
 apply(plugin = "kotlin")
 
 group = "com.icerockdev"
-version = "0.2.0"
+version = "0.3.0"
 
 val sourcesJar by tasks.registering(Jar::class) {
-    classifier = "sources"
+    archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
 }
 
@@ -37,7 +37,7 @@ dependencies {
     implementation("ca.krasnay:sqlbuilder:${properties["sqlbuilder_version"]}")
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties["junit_version"]}")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:${properties["junit_version"]}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${properties["junit_version"]}")
     testImplementation("io.zonky.test:embedded-postgres:${properties["embedded_postgres_version"]}")
     testImplementation(enforcedPlatform("io.zonky.test.postgres:embedded-postgres-binaries-bom:${properties["embedded_postgres_binaries_version"]}"))
 }
