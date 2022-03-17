@@ -34,7 +34,7 @@ class GeographyPointColumnType(private val length: Int = 4326) : ColumnType() {
 
     override fun valueFromDB(value: Any): GeographyPoint {
         return when (value) {
-            is PGobject -> getGeographyPoint(value.value)
+            is PGobject -> getGeographyPoint(value.value ?: "")
             is String -> getGeographyPoint(value)
             else -> error("$value of ${value::class.qualifiedName} is not valid geo object")
         }
