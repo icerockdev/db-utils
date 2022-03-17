@@ -14,22 +14,15 @@ plugins {
 }
 
 group = "com.icerockdev"
-version = "0.0.3"
+version = "0.0.4"
 
 apply(plugin = "kotlin")
-
-repositories {
-    maven { setUrl("https://dl.bintray.com/icerockdev/backend") }
-}
 
 application {
     mainClass.set("com.icerockdev.sample.Main")
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${properties["kotlin_version"]}")
-
-//    implementation("com.icerockdev:db-utils:0.0.2")
     implementation(project(":db-utils"))
 }
 
