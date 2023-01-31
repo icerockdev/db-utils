@@ -10,7 +10,6 @@ import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
 import org.postgresql.util.PGobject
-import java.lang.reflect.ParameterizedType
 import java.sql.PreparedStatement
 import java.sql.Time
 
