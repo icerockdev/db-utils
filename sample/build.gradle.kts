@@ -42,6 +42,8 @@ val jar by tasks.getting(Jar::class) {
     destinationDirectory.set(file("${project.rootDir}/build"))
     manifest {
         attributes["Main-Class"] = application.mainClass.get()
-        attributes["Class-Path"] = configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.joinToString { "libs/${it.name}" }
+        attributes["Class-Path"] = configurations.runtimeClasspath.get().filter {
+            it.name.endsWith("jar")
+        }.joinToString { "libs/${it.name}" }
     }
 }

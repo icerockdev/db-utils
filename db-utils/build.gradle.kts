@@ -15,7 +15,7 @@ plugins {
 apply(plugin = "kotlin")
 
 group = "com.icerockdev"
-version = "0.3.2"
+version = "0.4.0"
 
 val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
@@ -40,7 +40,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties["junit_version"]}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${properties["junit_version"]}")
     testImplementation("io.zonky.test:embedded-postgres:${properties["embedded_postgres_version"]}")
-    testImplementation(enforcedPlatform("io.zonky.test.postgres:embedded-postgres-binaries-bom:${properties["embedded_postgres_binaries_version"]}"))
+    testImplementation(
+        enforcedPlatform(
+            "io.zonky.test.postgres:embedded-postgres-binaries-bom:${properties["embedded_postgres_binaries_version"]}"
+        )
+    )
 }
 
 java {
@@ -118,6 +122,7 @@ publishing {
         }
 
         signing {
+            setRequired({!properties.containsKey("libraryPublishToMavenLocal")})
             val signingKeyId: String? = System.getenv("SIGNING_KEY_ID")
             val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
             val signingKey: String? = System.getenv("SIGNING_KEY")?.let { base64Key ->
